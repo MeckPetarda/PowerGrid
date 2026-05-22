@@ -70,11 +70,21 @@ public class CRSeriesWire extends AbstractElectricWire implements IStaticResidua
         return super.current() + Ieq;
     }
 
+    private boolean isStiff() {
+        if (capacitance == 0 || resistance == 0) return false;
+        double tau = resistance * capacitance;
+        return getDeltaTime() > 10.0 * tau;
+    }
+
     @Override
     public void postUpperSolve() {
         if(isConverged()) {
             var Vcap = capacitorVoltage();
-            Iprev = (Vcap - V) * capacitance / getDeltaTime();
+            if (isStiff()) {
+                Iprev = 0;
+            } else {
+                Iprev = (Vcap - V) * capacitance / getDeltaTime();
+            }
             // Save voltage with a bit of leakage
             V = Vcap * 0.99999;
         }

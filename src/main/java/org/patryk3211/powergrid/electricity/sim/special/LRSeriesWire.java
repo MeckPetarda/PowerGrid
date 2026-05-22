@@ -58,10 +58,20 @@ public class LRSeriesWire extends AbstractElectricWire implements IStaticResidua
         }
     }
 
+    private boolean isStiff() {
+        if (inductance == 0 || resistance == 0) return false;
+        double tau = inductance / resistance;
+        return getDeltaTime() > 10.0 * tau;
+    }
+
     @Override
     public void postUpperSolve() {
        if(isConverged()) {
-           Vprev = inductance * (current() - I) / getDeltaTime();
+           if (isStiff()) {
+               Vprev = 0;
+           } else {
+               Vprev = inductance * (current() - I) / getDeltaTime();
+           }
            I = current() * 0.99999;
        }
     }
