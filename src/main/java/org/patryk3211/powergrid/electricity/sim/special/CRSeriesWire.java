@@ -60,9 +60,17 @@ public class CRSeriesWire extends AbstractElectricWire implements IStaticResidua
         return potentialDifference() - current() * resistance;
     }
 
+    private boolean isStiff() {
+        if (capacitance == 0 || resistance == 0) return false;
+        return getDeltaTime() / (resistance * capacitance) >= 0.5;
+    }
+
     @Override
     public double conductance() {
-        return 1 / (resistance + getDeltaTime() / (2 * capacitance));
+        double G_cap = isStiff()
+            ? capacitance / getDeltaTime()
+            : 1.5 * capacitance / getDeltaTime();
+        return 1.0 / (resistance + 1.0 / G_cap);
     }
 
     @Override
@@ -70,24 +78,22 @@ public class CRSeriesWire extends AbstractElectricWire implements IStaticResidua
         return super.current() + Ieq;
     }
 
-    private boolean isStiff() {
-        if (capacitance == 0 || resistance == 0) return false;
-        double tau = resistance * capacitance;
-        return getDeltaTime() > 10.0 * tau;
-    }
-
     @Override
     public void postUpperSolve() {
         if(isConverged()) {
-            var Vcap = capacitorVoltage();
-            if (isStiff()) {
+            double Vcap = capacitorVoltage();
+            if(isStiff()) {
                 Iprev = 0;
             } else {
-                Iprev = (Vcap - V) * capacitance / getDeltaTime();
+                Iprev = capacitance * (Vcap - V) / (2.0 * getDeltaTime());
             }
-            // Save voltage with a bit of leakage
             V = Vcap * 0.99999;
         }
+    }
+
+    @Override
+    public double getLocalTau() {
+        return (capacitance == 0 || resistance == 0) ? Double.MAX_VALUE : resistance * capacitance;
     }
 
     @Override
@@ -96,7 +102,9 @@ public class CRSeriesWire extends AbstractElectricWire implements IStaticResidua
             Ieq = 0;
             return;
         }
-        var G_C = (2 * capacitance) / getDeltaTime();
+        var G_C = isStiff()
+            ? capacitance / getDeltaTime()
+            : 1.5 * capacitance / getDeltaTime();
 
         double residualScale = 1 - G_C / (1 / resistance + G_C);
         Ieq = (-G_C * V - Iprev) * residualScale;

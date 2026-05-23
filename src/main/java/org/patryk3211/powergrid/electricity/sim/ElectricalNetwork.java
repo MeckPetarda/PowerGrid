@@ -772,6 +772,21 @@ public class ElectricalNetwork implements IStamped {
         PERF.end();
     }
 
+    public int computeRequiredMultiTick(int globalMultiTick) {
+        double tauMin = Double.MAX_VALUE;
+        for (var wire : wires) {
+            if (wire instanceof ITimeAwareWire taw) {
+                double tau = taw.getLocalTau();
+                if (tau < tauMin)
+                    tauMin = tau;
+            }
+        }
+        if (tauMin == Double.MAX_VALUE)
+            return globalMultiTick;
+        int required = (int) Math.ceil(0.1 / tauMin);
+        return Math.min(required, globalMultiTick);
+    }
+
     public void calculate(int multiTicks) {
         prepare(multiTicks);
         for(int t = 0; t < multiTicks; ++t) {

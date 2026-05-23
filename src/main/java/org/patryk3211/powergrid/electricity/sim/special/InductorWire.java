@@ -36,7 +36,7 @@ public class InductorWire extends AbstractElectricWire implements IStaticResidua
 
     @Override
     public double conductance() {
-        return getDeltaTime() / (2 * inductance);
+        return getDeltaTime() / inductance;
     }
 
     @Override
@@ -59,9 +59,9 @@ public class InductorWire extends AbstractElectricWire implements IStaticResidua
     @Override
     public void postUpperSolve() {
         if(isConverged()) {
-            Vprev = inductance * (current() - I) / getDeltaTime();
-            // Save current with a bit of leakage
-            I = current() * 0.99999;
+            double Inew = current();
+            Vprev = 0;
+            I = Inew * 0.99999;
         }
     }
 

@@ -21,4 +21,8 @@ public interface ITimeAwareWire extends INetworkElement {
             return 0.05f;
         return getNetwork().getDeltaTime();
     }
+
+    default double getLocalTau() {
+        return Double.MAX_VALUE;
+    }
 }

@@ -70,11 +70,11 @@ public class CustomDisplayScreen extends AbstractSimiContainerScreen<CustomDispl
         saveBtn.withCallback(this::onClose);
 
         equationField = new EditBox(font, leftPos + 42, topPos + 31, 114, 9, CommonComponents.EMPTY);
-        equationField.setValue(menu.expression);
         equationField.setTextColor(-1);
         equationField.setBordered(false);
         equationField.setMaxLength(100);
         equationField.setEditable(true);
+        equationField.setValue(menu.expression);
         equationField.setResponder(str -> menu.expression = str);
 
         unitSelector = new EditableScrollBox(font, leftPos + 42, topPos + 53, 90, 9, CommonComponents.EMPTY, TOOLTIP_UNIT);

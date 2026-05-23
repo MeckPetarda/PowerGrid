@@ -36,9 +36,17 @@ public class LRSeriesWire extends AbstractElectricWire implements IStaticResidua
         this.resistance = R;
     }
 
+    private boolean isStiff() {
+        if (inductance == 0 || resistance == 0) return false;
+        return getDeltaTime() * resistance / inductance >= 0.5;
+    }
+
     @Override
     public double conductance() {
-        return 1 / (resistance + (2 * inductance) / getDeltaTime());
+        double G_ind = isStiff()
+            ? getDeltaTime() / inductance
+            : getDeltaTime() * 2.0 / (3.0 * inductance);
+        return 1.0 / (resistance + 1.0 / G_ind);
     }
 
     @Override
@@ -58,22 +66,22 @@ public class LRSeriesWire extends AbstractElectricWire implements IStaticResidua
         }
     }
 
-    private boolean isStiff() {
-        if (inductance == 0 || resistance == 0) return false;
-        double tau = inductance / resistance;
-        return getDeltaTime() > 10.0 * tau;
+    @Override
+    public void postUpperSolve() {
+        if(isConverged()) {
+            double Inew = current();
+            if(isStiff()) {
+                Vprev = 0;
+            } else {
+                Vprev = inductance * (Inew - I) / (2.0 * getDeltaTime());
+            }
+            I = Inew * 0.99999;
+        }
     }
 
     @Override
-    public void postUpperSolve() {
-       if(isConverged()) {
-           if (isStiff()) {
-               Vprev = 0;
-           } else {
-               Vprev = inductance * (current() - I) / getDeltaTime();
-           }
-           I = current() * 0.99999;
-       }
+    public double getLocalTau() {
+        return (inductance == 0 || resistance == 0) ? Double.MAX_VALUE : inductance / resistance;
     }
 
     @Override
@@ -82,7 +90,9 @@ public class LRSeriesWire extends AbstractElectricWire implements IStaticResidua
             Ieq = 0;
             return;
         }
-        var G_I = getDeltaTime() / (2 * inductance);
+        var G_I = isStiff()
+            ? getDeltaTime() / inductance
+            : getDeltaTime() * 2.0 / (3.0 * inductance);
 
         double residualScale = 1 - G_I / (1 / resistance + G_I);
         Ieq = (Vprev * G_I + I) * residualScale;
