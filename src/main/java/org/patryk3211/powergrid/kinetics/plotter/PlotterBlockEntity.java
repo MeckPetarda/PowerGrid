@@ -52,8 +52,8 @@ public class PlotterBlockEntity extends ElectricKineticBlockEntity {
     private static final float[] MAX_VALUES = new float[] { 2, 20, 200, 2000 };
 
     private GaugeValueBehaviour gaugeValue;
-    private CustomDisplayBehaviour displayBehaviour;
-    private float maxValue = MAX_VALUES[0];
+    CustomDisplayBehaviour displayBehaviour;
+    float maxValue = MAX_VALUES[0];
 
     private PlotterWire wire;
     protected float[] sampleBuffer = new float[40];

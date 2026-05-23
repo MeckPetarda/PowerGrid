@@ -20,6 +20,7 @@ import com.tterrag.registrate.util.entry.RegistryEntry;
 import org.patryk3211.powergrid.electricity.battery.BatteryDisplaySource;
 import org.patryk3211.powergrid.electricity.gauge.ElectricGaugeDisplaySource;
 import org.patryk3211.powergrid.kinetics.generator.clutch.ClutchDisplaySource;
+import org.patryk3211.powergrid.kinetics.plotter.PlotterDisplaySource;
 
 import static org.patryk3211.powergrid.PowerGrid.REGISTRATE;
 
@@ -34,6 +35,10 @@ public class ModdedDisplaySources {
 
     public static final RegistryEntry<DisplaySource, BatteryDisplaySource> BATTERY =
             REGISTRATE.displaySource("battery", BatteryDisplaySource::new)
+                    .register();
+
+    public static final RegistryEntry<DisplaySource, PlotterDisplaySource> PLOTTER =
+            REGISTRATE.displaySource("plotter", PlotterDisplaySource::new)
                     .register();
 
     public static void register() { }

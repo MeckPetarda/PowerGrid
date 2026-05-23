@@ -215,6 +215,10 @@
   "powergrid.display_source.generator_clutch.load_value": "Load percent",
   "powergrid.display_source.generator_clutch.rpm": "Speed",
 
+  "powergrid.display_source.plotter": "Plotter",
+  "powergrid.display_source.plotter.value": "Current value",
+  "powergrid.display_source.plotter.stats": "Statistics",
+
   "powergrid.display_source.battery": "Battery",
   "powergrid.display_source.battery.bar": "Progress Bar",
   "powergrid.display_source.battery.value": "Value",

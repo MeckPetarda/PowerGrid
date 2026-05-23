@@ -244,6 +244,7 @@ public class ModdedBlocks {
             .addLayer(() -> RenderType::translucent)
             .transform(CStress.setImpact(2.0))
             .transform(axeOrPickaxe())
+            .transform(DisplaySource.displaySource(ModdedDisplaySources.PLOTTER))
             .item()
                 .model(itemWithParent("block/plotter/item"))
                 .build()
