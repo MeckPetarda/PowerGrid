@@ -1,0 +1,8 @@
+<factorypath>
+    <factorypathentry kind="EXTJAR" id="/home/kuba/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm/9.4/b4e0e2d2e023aa317b7cfcfc916377ea348e07d1/asm-9.4.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/kuba/.gradle/caches/modules-2/files-2.1/net.fabricmc/mapping-io/0.2.1/2a1aeedce104191bbb9e39e26abfbfeaf9b0590b/mapping-io-0.2.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/kuba/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-tree/9.4/a99175a17d7fdc18cbcbd0e8ea6a5d276844190a/asm-tree-9.4.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/kuba/.gradle/caches/fabric-loom/1.21.1/loom.mappings.1_21_1.layered+hash.729439609-v2/mappings.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/kuba/.gradle/caches/modules-2/files-2.1/net.fabricmc/fabric-mixin-compile-extensions/0.6.0/6fda0c85c419f0a259da017a1424f27507eb30f0/fabric-mixin-compile-extensions-0.6.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/kuba/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.11.4+mixin.0.8.5/c1dc27696aa4006e492c2485c9ccbcb26045a971/sponge-mixin-0.11.4+mixin.0.8.5.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
