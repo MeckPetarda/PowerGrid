@@ -81,7 +81,9 @@ public class BJTWire extends CompoundWire implements ISolverHook {
         if(V0 < Vcrit * 0.5f && V1 < Vcrit * 0.5f)
             return V1;
         var dV = V1 - V0;
-        return V0 + network.diodeSmoothAlpha * dV;
+        if((V0 > Vcrit || V1 > Vcrit) && dV > V_T * 2 && dV / V_T > 0)
+            return V0 + V_T * Math.log1p(dV / V_T);
+        return V1;//V0 + dV * network.bjtSmoothAlpha;
     }
 
     @Override
@@ -112,7 +114,13 @@ public class BJTWire extends CompoundWire implements ISolverHook {
         double Gce = -Gee * forwardGain;
         double Gec = -Gcc * reverseGain;
 
-        double G_add = 1e-6 * Math.pow(10.0, iteration / 100.0);
+        double G_add = 1e-6;
+        if(iteration > 100) {
+            G_add = 1e-4;
+//            G_add = Math.min((iteration - 100) * 1e-3, 0.01);
+//            Gce -= G_add;
+//            Gec -= G_add;
+        }
 
         // Base - Emitter, simple wire
         setConductance(Gee + G_add);

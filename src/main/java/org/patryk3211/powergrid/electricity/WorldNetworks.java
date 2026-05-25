@@ -266,7 +266,7 @@ public class WorldNetworks extends SavedData implements NetworkGraph.IGraphModif
         removed.forEach(TransmissionLine::remove);
 
         perf.start();
-        int globalMultiTick = ModdedConfigs.server().electricity.solver.multiTicks.get();
+        int multiTick = ModdedConfigs.server().electricity.solver.multiTicks.get();
         var iter = subnetworks.iterator();
         while (iter.hasNext()) {
             var network = iter.next();
@@ -275,9 +275,11 @@ public class WorldNetworks extends SavedData implements NetworkGraph.IGraphModif
                 network.cleanup();
                 continue;
             }
-            int networkMultiTick = network.computeRequiredMultiTick(globalMultiTick);
-            network.prepare(networkMultiTick);
-            for (int i = 0; i < networkMultiTick; ++i) {
+            network.prepare(multiTick);
+        }
+        for(int i = 0; i < multiTick; ++i) {
+            // I guess this could go on a thread-pool
+            for(var network : subnetworks) {
                 network.singleTick();
             }
         }

@@ -23,6 +23,7 @@ import org.patryk3211.powergrid.electricity.sim.node.FloatingNode;
 import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
 import org.patryk3211.powergrid.electricity.sim.solver.DynamicallyTypedMatrix;
 import org.patryk3211.powergrid.electricity.sim.solver.GMRESSolver;
+import org.patryk3211.powergrid.electricity.sim.calculation.Precalculated;
 import org.patryk3211.powergrid.electricity.sim.special.GeneratorCoupling;
 import org.patryk3211.powergrid.electricity.sim.special.IRotor;
 
@@ -167,6 +168,13 @@ public class SolverTests extends TestHelper {
         var V2 = new GeneratorCoupling(N3, N4, 1, rotor2);
         V1.setField(100);
         V2.setField(100);
+        var constField = new Precalculated<Float>(60f) {
+            @Override public Float get() { return 60f; }
+            @Override public int getStamp() { return 0; }
+            @Override public void invalidate() {}
+        };
+        V1.setFieldStrengthProvider(constField);
+        V2.setFieldStrengthProvider(constField);
         Net.network.addNodes(V1, V2);
 
 //        Net.W(10f, N1, N2);
@@ -182,8 +190,6 @@ public class SolverTests extends TestHelper {
             var E2 = rotor2.energy();
             Net.calculate();
 
-            V1.tick(60);
-            V2.tick(60);
             var deltaE1 = rotor1.energy() - E1;
             var deltaE2 = rotor2.energy() - E2;
 

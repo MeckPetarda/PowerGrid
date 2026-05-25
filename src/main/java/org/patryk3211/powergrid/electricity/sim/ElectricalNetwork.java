@@ -338,9 +338,9 @@ public class ElectricalNetwork implements IStamped {
             return;
         if(leafNodes.containsKey(wire.node1) || leafNodes.containsKey(wire.node2))
             return;
-        if(!hasNode(wire.node1) || !hasNode(wire.node2))
+        if((wire.node1 != null && !hasNode(wire.node1)) || (wire.node2 != null && !hasNode(wire.node2)))
             return;
-        if(wire.node1.getIndex() == -1 || wire.node2.getIndex() == -1) {
+        if((wire.node1 != null && wire.node1.getIndex() == -1) || (wire.node2 != null && wire.node2.getIndex() == -1)) {
             PowerGrid.LOGGER.error("Node index negative even though it shouldn't be?", new Throwable());
             return;
         }
@@ -484,6 +484,14 @@ public class ElectricalNetwork implements IStamped {
                 // Add a shunt to ground to the first floating node.
                 // This ensures that the simulation is anchored to a 0V reference somewhere
                 // and should improve performance and stability when there are only 2 port sources.
+                if (shouldAnchor && anchor == null) {
+                    for (var node : nodes) {
+                        if (node instanceof FloatingNode floating) {
+                            anchor = floating;
+                            break;
+                        }
+                    }
+                }
                 if (shouldAnchor && anchor != null) {
                     mna.jacobianAdd(anchor.getIndex(), anchor.getIndex(), 1000);
                 }

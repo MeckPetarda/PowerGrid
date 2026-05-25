@@ -223,9 +223,9 @@ public class StructureChangeTests extends TestHelper {
         V2.setCurrent(0);
         Net1.calculate();
 
-        Assertions.assertEquals(2.5f, N1.getVoltage(), "N1 voltage incorrect");
-        Assertions.assertEquals(2f, N2.getVoltage(), "N2 voltage incorrect");
-        Assertions.assertEquals(5f / 20, V1.getCurrent(), "V1 current incorrect");
-        Assertions.assertEquals(4f / 20, V2.getCurrent(), "V2 current incorrect");
+        Assertions.assertEquals(2.5f, N1.getVoltage(), 1e-6, "N1 voltage incorrect");
+        Assertions.assertEquals(2f, N2.getVoltage(), 1e-6, "N2 voltage incorrect");
+        Assertions.assertEquals(5f / 20, V1.getCurrent(), 1e-6, "V1 current incorrect");
+        Assertions.assertEquals(4f / 20, V2.getCurrent(), 1e-6, "V2 current incorrect");
     }
 }

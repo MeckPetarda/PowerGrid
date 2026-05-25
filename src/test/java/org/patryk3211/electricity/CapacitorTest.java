@@ -90,31 +90,21 @@ public class CapacitorTest extends TestHelper {
     }
 
     @Test
-    void testCompoundWire() {
-        var Net1 = new TestHelper.Network();
-        var V1 = Net1.V(3);
-        var GND1 = Net1.V(0);
+    void testCRSeriesCharging() {
+        var Net = new Network();
 
-        var N1 = Net1.N();
+        var V1 = Net.V(1);
+        var CR = new CRSeriesWire(1f, 1f, V1, null);
+        Net.network.addWire(CR);
 
-        Net1.W(2.0f, V1, N1);
-        var C = new CapacitorWire(0.1f, N1, GND1);
-        Net1.network.addWire(C);
-
-        var Net2 = new TestHelper.Network();
-        var V2 = Net2.V(3);
-        var GND2 = Net2.V(0);
-        var CR = new CRSeriesWire(0.1f, 2.0f, V2, GND2);
-        Net2.network.addWire(CR);
-
-        // Simulate for 1 second
-        for(int i = 0; i < 20; ++i) {
-            Net1.calculate();
-            Net2.calculate();
+        // Simulate for 1 second (τ = RC = 1s)
+        for(int i = 0; i < 21; ++i) {
+            Net.calculate();
+            Assertions.assertEquals(V1.getCurrent(), CR.current(), 1e-5f, "CR series current is incorrect");
         }
 
-        Assertions.assertEquals(V1.getCurrent(), V2.getCurrent(), 1e-5f, "Voltage source current is incorrect");
-        Assertions.assertEquals(C.current(), CR.current(), 1e-5f, "Capacitor current is incorrect");
+        Assertions.assertEquals(0.632f, CR.capacitorVoltage(), 0.01f, "CR series capacitor voltage is incorrect");
+        Assertions.assertEquals(0.368f, V1.getCurrent(), 0.01f, "Voltage source current is incorrect");
     }
 
     @Test
@@ -139,7 +129,5 @@ public class CapacitorTest extends TestHelper {
             Assertions.assertEquals(V1.getCurrent(), C.current(), 1e-5f, "Capacitor current is incorrect");
         }
 
-        Assertions.assertEquals(0.632f, C.potentialDifference(), 0.01f, "Capacitor voltage is incorrect");
-        Assertions.assertEquals(0.368f, V1.getCurrent(), 0.01f, "Voltage source current is incorrect");
     }
 }

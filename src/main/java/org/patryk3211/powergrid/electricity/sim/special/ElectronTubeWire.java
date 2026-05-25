@@ -18,13 +18,14 @@ package org.patryk3211.powergrid.electricity.sim.special;
 import org.patryk3211.powergrid.electricity.sim.ElectricalNetwork;
 import org.patryk3211.powergrid.electricity.sim.node.IElectricNode;
 import org.patryk3211.powergrid.electricity.sim.solver.IAdmittanceAdder;
+import org.patryk3211.powergrid.electricity.sim.solver.IOuterHook;
 import org.patryk3211.powergrid.electricity.sim.solver.IResidualAdder;
 import org.patryk3211.powergrid.electricity.sim.solver.ISolverHook;
 
 import java.util.Collection;
 import java.util.List;
 
-public class ElectronTubeWire extends CompoundWire implements ISolverHook {
+public class ElectronTubeWire extends CompoundWire implements ISolverHook, IOuterHook {
     private static final double GRID_CONDUCTANCE = 1e-6;
 
     private final IElectricNode grid;
@@ -63,6 +64,13 @@ public class ElectronTubeWire extends CompoundWire implements ISolverHook {
     public void setSaturationCurrent(float saturationCurrent) {
         valueChange(saturationCurrent, this.saturationCurrent);
         this.saturationCurrent = saturationCurrent;
+    }
+
+    @Override
+    public void preSolve() {
+        prevCathode = node1.getVoltage();
+        prevGrid = grid.getVoltage();
+        prevAnode = node2.getVoltage();
     }
 
     @Override
