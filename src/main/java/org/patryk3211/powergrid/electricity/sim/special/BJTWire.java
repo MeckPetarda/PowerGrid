@@ -51,6 +51,9 @@ public class BJTWire extends CompoundWire implements ISolverHook {
 
     private double power;
 
+    private double intDelta;
+    private int lastIterationIndex = -1;
+
     public BJTWire(IElectricNode collector, IElectricNode base, IElectricNode emitter, double Is, double fBeta, double Rs, boolean pnp) {
         super(base, emitter);
         this.collector = collector;
@@ -81,9 +84,12 @@ public class BJTWire extends CompoundWire implements ISolverHook {
         if(V0 < Vcrit * 0.5f && V1 < Vcrit * 0.5f)
             return V1;
         var dV = V1 - V0;
-        if((V0 > Vcrit || V1 > Vcrit) && dV > V_T * 2 && dV / V_T > 0)
+        if(intDelta > V_T * 4) return V0 + 0.5 * dV;
+        if((V0 > Vcrit * 0.5 || V1 > Vcrit * 0.5) && dV > 0)
             return V0 + V_T * Math.log1p(dV / V_T);
-        return V1;//V0 + dV * network.bjtSmoothAlpha;
+        if((V0 < -Vcrit * 0.5 || V1 < -Vcrit * 0.5) && dV < 0)
+            return V0 - V_T * Math.log1p(-dV / V_T);
+        return V1;
     }
 
     @Override
@@ -93,6 +99,10 @@ public class BJTWire extends CompoundWire implements ISolverHook {
         double Vb = node1.getVoltage();
         double Ve = node2.getVoltage();
         double Vbe = Vb - Ve, Vbc = Vb - Vc;
+        if(iteration != lastIterationIndex) {
+            intDelta = intDelta * 0.999 + Math.abs(Vbe - prevEmitter) + Math.abs(Vbc - prevCollector);
+            lastIterationIndex = iteration;
+        }
         Vbc = prevCollector = pnp * pnLim(pnp * Vbc, pnp * prevCollector, Vcrit);
         Vbe = prevEmitter = pnp * pnLim(pnp * Vbe, pnp * prevEmitter, Vcrit);
 

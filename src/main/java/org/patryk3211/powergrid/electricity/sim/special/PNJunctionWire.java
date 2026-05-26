@@ -30,6 +30,7 @@ public class PNJunctionWire extends AbstractElectricWire implements ISolverHook 
     private double Ieq = 0;
     private double prevV;
     private double intDelta;
+    private int lastIterationIndex = -1;
 
     public PNJunctionWire(double reverseSaturationCurrent, double seriesResistance, double temperatureCelsius, double idealityFactor, IElectricNode node1, IElectricNode node2) {
         super(node1, node2);
@@ -65,8 +66,15 @@ public class PNJunctionWire extends AbstractElectricWire implements ISolverHook 
     public double pnLim(double V1, double V0, double Vcrit) {
         if(V1 < Vcrit * 0.5f && V0 < Vcrit * 0.5f)
             return V1;
+        double k = 1.380649e-23;
+        double q = 1.602176634e-19;
+        double V_T = (k * (temperatureCelsius + 273.15)) / q;
+        double n = idealityFactor;
         var dV = V1 - V0;
-        return V0 + network.diodeSmoothAlpha * dV;
+        if(intDelta > n * V_T * 4) return V0 + 0.5 * dV;
+        if(dV > 0) return V0 + n * V_T * Math.log1p(dV / (n * V_T));
+        if(dV < 0) return V0 - n * V_T * Math.log1p(-dV / (n * V_T));
+        return V1;
     }
 
     public void setTemperatureCelsius(double temperatureCelsius) {
@@ -93,8 +101,11 @@ public class PNJunctionWire extends AbstractElectricWire implements ISolverHook 
         double V = potentialDifference();
         double Vcrit = n * V_T * Math.log(V_T / (reverseSaturationCurrent * Math.sqrt(2)));
         var dV = V - prevV;
+        if(iteration != lastIterationIndex) {
+            intDelta = intDelta * 0.999 + Math.abs(dV);
+            lastIterationIndex = iteration;
+        }
         prevV = V = pnLim(V, prevV, Vcrit);
-        intDelta = intDelta * 0.999 + Math.abs(dV);
         double I_s1 = reverseSaturationCurrent;
         double E_g = 1.12; // Silicon bandgap energy in eV
         double T_1 = 22 + 273.15; // Reference temperature in K

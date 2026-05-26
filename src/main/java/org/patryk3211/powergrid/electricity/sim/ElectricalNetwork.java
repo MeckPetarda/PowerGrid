@@ -345,8 +345,8 @@ public class ElectricalNetwork implements IStamped {
             return;
         }
 
-        conductanceDelta += Math.abs(change);
         if(countUpdates) {
+            conductanceDelta += Math.abs(change);
             ++conductanceUpdates;
         }
         wire.stamp(mna::jacobianAdd, change);
